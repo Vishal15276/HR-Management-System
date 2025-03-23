@@ -1,0 +1,38 @@
+                                                 HR   Management  System
+                                                   Tech Stack - MER(Vite ,Tailwind)N
+
+Dashboards:
+1. Admin
+2. Hr
+3. Manager
+4. Employee
+
+Employee:
+Profile -contains all the details of the employee
+Leave apply
+Project submission
+Training and development
+notification
+scheduler - 
+
+navbar - notification,profile,login,logout,home,
+side bar- attendance-visualization,leave apply,scheduler
+
+Manager:
+Meeting schedule
+Work Allocation
+Leave approval
+performance visualization
+
+Hr:
+Employees management - CRUD
+Employee training scheduler
+total leave request of both manager and employee
+Hiring process
+
+Admin:
+Overall maintenance
+User management - Add, edit, delete, and deactivate users (HR, Manager, Employee).
+Reports & Analytics: View system-wide statistics, such as employee count, department-wise analytics, and performance metrics.
+Audit Logs: Track changes made by users across the system.
+table -activate or deactivate accounts
