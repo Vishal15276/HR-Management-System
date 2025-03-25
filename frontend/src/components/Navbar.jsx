@@ -1,37 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext"; // Import AuthContext
 
 function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [role, setRole] = useState("");
+  const { isLoggedIn, role, logout } = useContext(AuthContext); // Use global auth state
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
-
-  // Check login state on component mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userRole = localStorage.getItem("role");
-    if (token) {
-      setIsLoggedIn(true);
-      setRole(userRole);
-    }
-  }, []);
-
-  // Logout function
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    setIsLoggedIn(false);
-    navigate("/login");
-  };
 
   return (
     <nav className="bg-blue-600 p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-white text-xl font-bold">HR Management</h1>
         <div className="flex items-center space-x-8">
-          <Link to="/" className="text-white text-lg hover:text-gray-200">Home</Link>
-          <Link to="/about" className="text-white text-lg hover:text-gray-200">About Us</Link>
+          <Link to="/" className="text-white text-lg hover:text-gray-200">
+            Home
+          </Link>
+          <Link to="/about" className="text-white text-lg hover:text-gray-200">
+            About Us
+          </Link>
 
           {/* Show Login if not logged in */}
           {!isLoggedIn ? (
@@ -62,7 +48,10 @@ function Navbar() {
                     Details
                   </Link>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      logout();
+                      navigate("/login"); // Redirect after logout
+                    }}
                     className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
                     Logout
@@ -78,3 +67,4 @@ function Navbar() {
 }
 
 export default Navbar;
+ 

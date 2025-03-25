@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext"; // Import AuthContext
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); // Get login function from context
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:5000/login", { email, password });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.role); // Store role in local storage
+      login(res.data.token, res.data.role); // Update AuthContext state
 
       // Redirect based on role
       switch (res.data.role) {
@@ -57,7 +58,9 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 w-full rounded">Login</button>
+        <button type="submit" className="bg-blue-500 text-white p-2 w-full rounded">
+          Login
+        </button>
         <p className="mt-4 text-center">
           Don't have an account?{" "}
           <button onClick={() => navigate("/register")} className="text-blue-500 underline">
