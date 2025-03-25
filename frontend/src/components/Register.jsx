@@ -6,12 +6,13 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("Employee"); // Default role
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/register", { name, email, password });
+      await axios.post("http://localhost:5000/register", { name, email, password, role });
       alert("Registration successful. Please log in.");
       navigate("/login");
     } catch (err) {
@@ -47,7 +48,23 @@ function Register() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit" className="bg-green-500 text-white p-2 w-full rounded">Register</button>
+        
+        {/* Dropdown for Role Selection */}
+        <select
+          className="border p-2 w-full mb-4"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          required
+        >
+          <option value="HR">HR</option>
+          <option value="Admin">Admin</option>
+          <option value="Employee">Employee</option>
+          <option value="Manager">Manager</option>
+        </select>
+
+        <button type="submit" className="bg-green-500 text-white p-2 w-full rounded">
+          Register
+        </button>
         <p className="mt-4 text-center">
           Already have an account?{" "}
           <button onClick={() => navigate("/login")} className="text-blue-500 underline">

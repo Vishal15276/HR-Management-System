@@ -11,8 +11,27 @@ function Login() {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:5000/login", { email, password });
+
       localStorage.setItem("token", res.data.token);
-      navigate("/");
+      localStorage.setItem("role", res.data.role); // Store role in local storage
+
+      // Redirect based on role
+      switch (res.data.role) {
+        case "Admin":
+          navigate("/admin-dashboard");
+          break;
+        case "HR":
+          navigate("/hr-dashboard");
+          break;
+        case "Manager":
+          navigate("/manager-dashboard");
+          break;
+        case "Employee":
+          navigate("/employee-dashboard");
+          break;
+        default:
+          navigate("/");
+      }
     } catch (err) {
       alert("Invalid credentials");
     }

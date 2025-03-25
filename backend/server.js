@@ -19,16 +19,22 @@ const UserSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
   password: String,
+  role: { type: String, enum: ["HR", "Admin", "Employee", "Manager"], required: true }, // Added role field
 });
 
 const User = mongoose.model("User", UserSchema);
 
 // Register User
 app.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
+
+  if (!["HR", "Admin", "Employee", "Manager"].includes(role)) {
+    return res.status(400).json({ error: "Invalid role selected" });
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
-    const user = new User({ name, email, password: hashedPassword });
+    const user = new User({ name, email, password: hashedPassword, role });
     await user.save();
     res.json({ message: "User registered successfully" });
   } catch (err) {
@@ -46,8 +52,9 @@ app.post("/login", async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-  res.json({ token });
+  const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+  res.json({ token, role: user.role }); // Sending role in response
 });
 
 const PORT = process.env.PORT || 5000;
