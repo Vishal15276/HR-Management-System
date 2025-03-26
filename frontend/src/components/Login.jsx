@@ -1,25 +1,29 @@
-import React, { useState, useContext } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext"; // Import AuthContext
+import axios from "axios";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Login = () => {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // Get login function from context
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/login", { email, password });
+      const response = await axios.post("http://localhost:5000/login", formData);
+      const { token, user } = response.data;
 
-      login(res.data.token, res.data.role); // Update AuthContext state
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect based on role
-      switch (res.data.role) {
+      // Redirect based on user role
+      switch (user.role) {
         case "Admin":
-          navigate("/admin-dashboard");
+          navigate("/admin");
           break;
         case "HR":
           navigate("/hr-dashboard");
@@ -28,48 +32,52 @@ function Login() {
           navigate("/manager-dashboard");
           break;
         case "Employee":
-          navigate("/employee-dashboard");
+          navigate("/employee");
           break;
         default:
           navigate("/");
       }
-    } catch (err) {
-      alert("Invalid credentials");
+    } catch (error) {
+      setMessage("Invalid email or password");
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-96">
-        <h2 className="text-xl mb-4">Login</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          className="border p-2 w-full mb-4"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="border p-2 w-full mb-4"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit" className="bg-blue-500 text-white p-2 w-full rounded">
+    <div className="flex justify-center items-center h-screen">
+      <form onSubmit={handleSubmit} className="bg-white p-6 shadow-lg rounded-lg w-96">
+        <h2 className="text-2xl font-bold mb-4">Login</h2>
+        {message && <p className="text-red-500">{message}</p>}
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border border-gray-300 rounded mt-1"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Password</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border border-gray-300 rounded mt-1"
+          />
+        </div>
+
+        <button type="submit" className="bg-blue-600 text-white p-2 rounded w-full">
           Login
         </button>
-        <p className="mt-4 text-center">
-          Don't have an account?{" "}
-          <button onClick={() => navigate("/register")} className="text-blue-500 underline">
-            Create Account
-          </button>
-        </p>
       </form>
     </div>
   );
-}
+};
 
 export default Login;
