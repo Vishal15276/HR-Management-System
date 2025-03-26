@@ -75,6 +75,18 @@ const Login = () => {
         <button type="submit" className="bg-blue-600 text-white p-2 rounded w-full">
           Login
         </button>
+
+        {/* Create Account Button */}
+        <p className="mt-4 text-center">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            className="text-blue-600 underline"
+            onClick={() => navigate("/register")}
+          >
+            Create Account
+          </button>
+        </p>
       </form>
     </div>
   );

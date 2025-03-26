@@ -74,10 +74,54 @@ app.post("/login", async (req, res) => {
   res.json({ message: "Login successful", user });
 });
 
+// ✅ Fetch All Users
+app.get("/users", async (req, res) => {
+  try {
+    const users = await User.find({}, { password: 0 }); // Exclude password for security
+    res.json(users);
+  } catch (err) {
+    console.error("❌ Error Fetching Users:", err);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// ✅ Add a New User (Admin Only)
+app.post("/users", async (req, res) => {
+  const { name, email, password, role } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ name, email, password: hashedPassword, role });
+    await newUser.save();
+    res.json({ message: "User added successfully" });
+  } catch (err) {
+    res.status(400).json({ error: "Error adding user" });
+  }
+});
+
+// ✅ Update a User
+app.put("/users/:id", async (req, res) => {
+  const { name, email, role } = req.body;
+  try {
+    await User.findByIdAndUpdate(req.params.id, { name, email, role });
+    res.json({ message: "User updated successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update user" });
+  }
+});
+
+// ✅ Delete a User
+app.delete("/users/:id", async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
+
 // Apply for Leave
 app.post("/apply-leave", async (req, res) => {
   const { employeeId, employeeName, leaveType, startDate, endDate, reason } = req.body;
-  console.log("📝 Received Leave Request:", req.body);
 
   if (!employeeId || !employeeName || !leaveType || !startDate || !endDate || !reason) {
     return res.status(400).json({ error: "All fields are required" });
@@ -93,26 +137,87 @@ app.post("/apply-leave", async (req, res) => {
       reason,
     });
     await leaveRequest.save();
-    console.log("✅ Leave Request Saved:", leaveRequest);
     res.json({ message: "Leave request submitted successfully" });
   } catch (err) {
-    console.error("❌ Error Applying Leave:", err);
     res.status(500).json({ error: "Failed to apply for leave" });
   }
 });
 
-// Get All Leave Requests
+// ✅ Get All Leave Requests (For Admin/HR)
 app.get("/leave-requests", async (req, res) => {
   try {
     const leaveRequests = await Leave.find();
     res.json(leaveRequests);
   } catch (err) {
-    console.error("❌ Error Fetching Leave Requests:", err);
     res.status(500).json({ error: "Failed to fetch leave requests" });
   }
 });
 
-// Logout User
+// ✅ Approve or Reject Leave Request
+app.put("/approve-leave/:id", async (req, res) => {
+  const { status } = req.body; // "Approved" or "Rejected"
+
+  if (!["Approved", "Rejected"].includes(status)) {
+    return res.status(400).json({ error: "Invalid status value" });
+  }
+
+  try {
+    const leaveRequest = await Leave.findById(req.params.id);
+    if (!leaveRequest) {
+      return res.status(404).json({ error: "Leave request not found" });
+    }
+
+    leaveRequest.status = status;
+    await leaveRequest.save();
+
+    res.json({ message: `Leave request ${status.toLowerCase()} successfully` });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update leave status" });
+  }
+});
+
+// ✅ Check if User is Logged In
+app.get("/check-auth", (req, res) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.json({ isLoggedIn: false, role: "" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ isLoggedIn: true, role: decoded.role });
+  } catch (err) {
+    res.json({ isLoggedIn: false, role: "" });
+  }
+});
+app.get("/leave-requests", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = jwt.verify(token, "your_secret_key");
+    const userId = decoded.userId;
+
+    const leaveRequests = await Leave.find({ employeeId: userId });
+
+    res.json(leaveRequests);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch leave requests" });
+  }
+});
+app.get("/leave-requests/:employeeId", async (req, res) => {
+  try {
+    const { employeeId } = req.params;
+    const leaveRequests = await LeaveModel.find({ employeeId });
+    res.json(leaveRequests);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching leave requests." });
+  }
+});
+
+
+// ✅ Logout User
 app.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Logged out successfully" });

@@ -7,7 +7,6 @@ const UserManagement = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [updateData, setUpdateData] = useState({ name: "", email: "", role: "" });
 
-  // Fetch users
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -21,7 +20,6 @@ const UserManagement = () => {
     }
   };
 
-  // Add a new user
   const handleAddUser = async (e) => {
     e.preventDefault();
     try {
@@ -33,13 +31,11 @@ const UserManagement = () => {
     }
   };
 
-  // Set user for editing
   const handleEditClick = (user) => {
     setEditingUser(user._id);
     setUpdateData({ name: user.name, email: user.email, role: user.role });
   };
 
-  // Update user
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     try {
@@ -51,13 +47,17 @@ const UserManagement = () => {
     }
   };
 
-  // Delete user
   const handleDeleteUser = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+    if (!confirmDelete) return;
+
     try {
       await axios.delete(`http://localhost:5000/users/${id}`);
       fetchUsers();
+      alert("User deleted successfully!");
     } catch (error) {
       console.error("Error deleting user:", error);
+      alert("Failed to delete user.");
     }
   };
 
@@ -124,65 +124,14 @@ const UserManagement = () => {
                 <td className="border p-2">{user.email}</td>
                 <td className="border p-2">{user.role}</td>
                 <td className="border p-2 flex justify-center">
-                  <button
-                    className="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
-                    onClick={() => handleEditClick(user)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                    onClick={() => handleDeleteUser(user._id)}
-                  >
-                    Delete
-                  </button>
+                  <button className="bg-yellow-500 text-white px-3 py-1 rounded mr-2" onClick={() => handleEditClick(user)}>Edit</button>
+                  <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => handleDeleteUser(user._id)}>Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      {/* Edit User Modal */}
-      {editingUser && (
-        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-md w-96">
-            <h2 className="text-xl mb-4">Edit User</h2>
-            <form onSubmit={handleUpdateUser}>
-              <input
-                type="text"
-                placeholder="Name"
-                value={updateData.name}
-                onChange={(e) => setUpdateData({ ...updateData, name: e.target.value })}
-                className="border p-2 w-full mb-2"
-                required
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                value={updateData.email}
-                onChange={(e) => setUpdateData({ ...updateData, email: e.target.value })}
-                className="border p-2 w-full mb-2"
-                required
-              />
-              <select
-                value={updateData.role}
-                onChange={(e) => setUpdateData({ ...updateData, role: e.target.value })}
-                className="border p-2 w-full mb-4"
-              >
-                <option value="Admin">Admin</option>
-                <option value="HR">HR</option>
-                <option value="Manager">Manager</option>
-                <option value="Employee">Employee</option>
-              </select>
-              <div className="flex justify-between">
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
-                <button onClick={() => setEditingUser(null)} className="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -17,6 +17,11 @@ const AdminSidebar = () => {
           </Link>
         </li>
         <li>
+          <Link to="/admin/leave-approval" className="block p-2 hover:bg-blue-700 rounded">
+            Leave Approval
+          </Link>
+        </li>
+        <li>
           <Link to="/admin/reports" className="block p-2 hover:bg-blue-700 rounded">
             Reports
           </Link>
