@@ -58,13 +58,10 @@ const Leave = () => {
   return (
     <div>
       {/* Navbar */}
-      <nav className="bg-blue-600 p-4 flex justify-between items-center text-white">
-        <h1 className="text-xl font-bold cursor-pointer" onClick={() => navigate("/")}>
-          HR Management
-        </h1>
-        <div>
+      <nav className="bg-blue-600 p-4 flex justify-center items-center text-white">
+        <div className="flex space-x-8">
           <button
-            className="mx-4 hover:underline"
+            className="hover:underline"
             onClick={() => navigate("/leave-requests")}
           >
             Leave Requests
@@ -79,95 +76,104 @@ const Leave = () => {
       </nav>
 
       {/* Apply Leave Form */}
-      <div className="ml-64 p-6">
-        <h2 className="text-3xl font-bold mb-4">Apply for Leave</h2>
-        {message && <p className={`text-${message.includes("Failed") ? "red" : "green"}-500`}>{message}</p>}
-        <form onSubmit={handleSubmit} className="bg-white p-6 shadow-lg rounded-lg w-96">
-          <div className="mb-4">
-            <label className="block text-gray-700">Employee ID</label>
-            <input
-              type="text"
-              name="employeeId"
-              value={formData.employeeId}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border border-gray-300 rounded mt-1"
-              placeholder="Enter Employee ID"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700">Employee Name</label>
-            <input
-              type="text"
-              name="employeeName"
-              value={formData.employeeName}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border border-gray-300 rounded mt-1"
-              placeholder="Enter Employee Name"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700">Leave Type</label>
-            <select
-              name="leaveType"
-              value={formData.leaveType}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mt-1"
-            >
-              <option value="Sick Leave">Sick Leave</option>
-              <option value="Casual Leave">Casual Leave</option>
-              <option value="Earned Leave">Earned Leave</option>
-            </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-gray-700">Start Date</label>
-              <input
-                type="date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded mt-1"
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700">End Date</label>
-              <input
-                type="date"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded mt-1"
-              />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700">Reason</label>
-            <textarea
-              name="reason"
-              value={formData.reason}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border border-gray-300 rounded mt-1"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="bg-blue-600 text-white p-2 rounded w-full hover:bg-blue-700 transition duration-200"
-            disabled={loading}
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="p-6 w-full max-w-lg">
+          <h2 className="text-3xl font-bold mb-4 text-center">Apply for Leave</h2>
+          {message && (
+            <p className={`text-${message.includes("Failed") ? "red" : "green"}-500 text-center`}>
+              {message}
+            </p>
+          )}
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-6 shadow-lg rounded-lg"
           >
-            {loading ? "Submitting..." : "Submit Request"}
-          </button>
-        </form>
+            <div className="mb-4">
+              <label className="block text-gray-700">Employee ID</label>
+              <input
+                type="text"
+                name="employeeId"
+                value={formData.employeeId}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border border-gray-300 rounded mt-1"
+                placeholder="Enter Employee ID"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700">Employee Name</label>
+              <input
+                type="text"
+                name="employeeName"
+                value={formData.employeeName}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border border-gray-300 rounded mt-1"
+                placeholder="Enter Employee Name"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700">Leave Type</label>
+              <select
+                name="leaveType"
+                value={formData.leaveType}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded mt-1"
+              >
+                <option value="Sick Leave">Sick Leave</option>
+                <option value="Casual Leave">Casual Leave</option>
+                <option value="Earned Leave">Earned Leave</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-gray-700">Start Date</label>
+                <input
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-2 border border-gray-300 rounded mt-1"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700">End Date</label>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-2 border border-gray-300 rounded mt-1"
+                />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700">Reason</label>
+              <textarea
+                name="reason"
+                value={formData.reason}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border border-gray-300 rounded mt-1"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="bg-blue-600 text-white p-2 rounded w-full hover:bg-blue-700 transition duration-200"
+              disabled={loading}
+            >
+              {loading ? "Submitting..." : "Submit Request"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
